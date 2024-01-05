@@ -16,7 +16,8 @@ use rkyv;
 //actually defined in libsignal/rust/protocol/src/curve.rs
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 enum PublicKeyData {
-    DjbPublicKey([u8; curve25519::PUBLIC_KEY_LENGTH]);
+    //DjbPublicKey([u8; curve25519::PUBLIC_KEY_LENGTH]) // defined in nonpublic module in libsignal/rust/protocol/curve/curve25519.rs
+    DjbPublicKey([u8; 32])
 }
 //actually defined in libsignal/rust/protocol/src/curve.rs
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
@@ -27,7 +28,8 @@ pub struct PublicKey {
 //actually defined in libsignal/rust/protocol/src/curve.rs
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 enum PrivateKeyData{
-    DjbPrivateKey([u8; curve25519::PRIVATE_KEY_LENGTH])
+    //DjbPrivateKey([u8; curve25519::PRIVATE_KEY_LENGTH])// defined in nonpublic module in libsignal/rust/protocol/curve/curve25519.rs
+    DjbPrivateKey([u8; 32])
 }
 
 //actually defined in libsignal/rust/protocol/src/curve.rs
