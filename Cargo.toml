@@ -1,0 +1,24 @@
+[package]
+name = "test-signal-xous"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+xous = "0.9.55"
+log = "0.4.14"
+xous-api-log-server = {version = "0.1.2", package = "xous-api-log-server"}
+libsignal-protocol = { git = "https://github.com/signalapp/libsignal", tag="v0.33.0" }
+rkyv = {version = "0.4.3", default-features = false, features = ["const_generics"]}
+rand = "0.8.5"
+futures-util = "0.3.7"
+xous-ipc = "0.9.56"
+
+[dev-dependencies]
+criterion = "0.5"
+hex-literal = "0.4.1"
+proptest = "1.0"
+hex = "0.4"
+uuid = "1.1.2"
+
+[patch.crates-io.getrandom]
+path = "../xous-core/imports/getrandom"
