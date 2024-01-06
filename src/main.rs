@@ -1,6 +1,7 @@
 #![cfg_attr(target_os = "none", no_main)]
 mod api;
 use api::*;
+use lib;
 use libsignal_protocol;
 use num_traits::*;
 use rand::Rng;
@@ -25,10 +26,11 @@ fn main() -> ! {
                     Buffer::from_memory_message_mut(msg.body.memory_message_mut().unwrap())
                 };
                 let mut rng = rand::thread_rng();
-                let identity_keypair: libsignal_protocol::IdentityKeyPair =
-                    libsignal_protocol::IdentityKeyPair::generate(&mut rng);
+                let keypair: libsignal_protocol::KeyPair =
+                    libsignal_protocol::IdentityKeyPair::generate(&mut rng).into();
                 buffer
-                    .replace(identity_keypair)
+                    //TODO: can I implement rkyv::Serialize for libsignal_protocol::KeyPair?
+                    .replace(keypair)
                     .expect("couldn't serialize return");
             }
         }
