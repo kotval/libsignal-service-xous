@@ -13,39 +13,29 @@
 
 use rkyv;
 
-//actually defined in libsignal/rust/protocol/src/curve.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-enum PublicKeyData {
-    //DjbPublicKey([u8; curve25519::PUBLIC_KEY_LENGTH]) // defined in nonpublic module in libsignal/rust/protocol/curve/curve25519.rs
-    DjbPublicKey([u8; 32])
-}
-//actually defined in libsignal/rust/protocol/src/curve.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-pub struct PublicKey {
-    key: DjbPublicKey
-}
-
-//actually defined in libsignal/rust/protocol/src/curve.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-enum PrivateKeyData{
-    //DjbPrivateKey([u8; curve25519::PRIVATE_KEY_LENGTH])// defined in nonpublic module in libsignal/rust/protocol/curve/curve25519.rs
-    DjbPrivateKey([u8; 32])
-}
-
-//actually defined in libsignal/rust/protocol/src/curve.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-pub struct PrivateKey {
-    key: DjbPrivateKey
-}
-
 //actually defined in libsignal/rust/protocol/src/identity_key.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-pub struct IdentityKey {
-    key: PublicKey
-}
-//actually defined in libsignal/rust/protocol/src/identity_key.rs
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(rkyv::Archive, rkyv::Deserialize, rkyv::Serialize, Debug, PartialEq)]
 pub struct IdentityKeyPair {
-    pub identity_key: IdentityKey,
-    pub private_key: PrivateKey,
+    pub identity_key: [u8; 32],
+    pub private_key: [u8; 32],
+}
+impl IdentityKeyPair {
+    pub fn new() -> IdentityKeyPair {
+        IdentityKeyPair {
+            identity_key: [0u8; 32],
+            private_key: [0u8; 32],
+        }
+    }
+}
+#[derive(rkyv::Archive, rkyv::Deserialize, rkyv::Serialize, Debug, PartialEq)]
+pub struct IdentityKeyPairMessage {
+    pub data: [u8; 64],
+}
+impl From<&ArchivedIdentityKeyPairMessage> for IdentityKeyPair {
+    fn from(msg: &ArchivedIdentityKeyPairMessage) -> IdentityKeyPair {
+        IdentityKeyPair {
+            identity_key: msg.data[0..32].try_into().unwrap(),
+            private_key: msg.data[32..64].try_into().unwrap(),
+        }
+    }
 }

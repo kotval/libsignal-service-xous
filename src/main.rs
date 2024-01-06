@@ -1,30 +1,35 @@
-![cfg_attr(target_os = "none", no_main)]
-
+#![cfg_attr(target_os = "none", no_main)]
 mod api;
 use api::*;
-use crate::identy_key;
+use libsignal_protocol;
 use num_traits::*;
-use rand::::rngs::OsRng;
-mod libsignal_protocol;
+use rand::Rng;
+use xous_ipc::Buffer;
+use xous_api_log_server as log_server;
+use xous_api_names as xous_names;
 
-#[xous::xous_main]
-fn xmain() -> ! {
+fn main() -> ! {
     log_server::init_wait().unwrap();
     log::set_max_level(log::LevelFilter::Info);
     log::info!("my PID is {}", xous::process::id());
     let xns = xous_names::XousNames::new().unwrap();
-    let sid = xns.register_name(api::SERVER_NAME, None).expect("can't register server");
+    let sid = xns
+        .register_name(api::SERVER_NAME, None)
+        .expect("can't register server");
     log::trace!("registered with NS -- {:?}", sid);
     loop {
-        let msg = msg::xous::receive_message(sid).unwrap();
+        let msg = xous::receive_message(sid).unwrap();
         match FromPrimitive::from_usize(msg.body.id()) {
-            Some(Opcodes::GenerateIdentityKeyPair) =>{
+            Some(Opcodes::GenerateIdentityKeyPair) => {
                 let mut buffer = unsafe {
-                    Buffer::from_memory_message_mut(msg.body.memory_message_mut().unwrap)
-                }
-                let mut csprng = OsRng;
-                let identity_keypair: IdentityKeyPair = libsignal_protocol::IdentityKeyPair::generate(&mut rng);
-                buffer.replace(identity_keypair).expect("couldn't serialize return");
+                    Buffer::from_memory_message_mut(msg.body.memory_message_mut().unwrap())
+                };
+                let mut rng = rand::thread_rng();
+                let identity_keypair: libsignal_protocol::IdentityKeyPair =
+                    libsignal_protocol::IdentityKeyPair::generate(&mut rng);
+                buffer
+                    .replace(identity_keypair)
+                    .expect("couldn't serialize return");
             }
         }
     }

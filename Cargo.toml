@@ -12,6 +12,9 @@ rkyv = {version = "0.4.3", default-features = false, features = ["const_generics
 rand = "0.8.5"
 futures-util = "0.3.7"
 xous-ipc = "0.9.56"
+num-derive = {version = "0.3.3", default-features = false}
+num-traits = {version = "0.2.14", default-features = false}
+xous-api-names = "0.9.54"
 
 [dev-dependencies]
 criterion = "0.5"
